@@ -28,11 +28,11 @@ public class ScheduledTasks {
         /**Get all the hardcoded company symbols */
         Set<String> companySymbols = companies.stringPropertyNames();
         for (String symbol : companySymbols) {
-          fetchData("TIME_SERIES_INTRADAY", symbol); 
-          pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
-          
-          fetchData("TIME_SERIES_DAILY", symbol);
-          pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
+         fetchData("TIME_SERIES_INTRADAY", symbol); 
+         pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
+       
+         fetchData("TIME_SERIES_DAILY", symbol);
+         pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
          
           fetchData("GLOBAL_QUOTE",symbol);
           pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
@@ -64,7 +64,7 @@ public class ScheduledTasks {
       do {
         try {
           logger.info("Fetching " +function +" data for "+ symbol +"  @ "+ LocalDateTime.now() );
-          if(function == "TIME_SERIES_INTRADAY" || function =="TIME_SERIES_DAILY"){ 
+          if(function.equals("TIME_SERIES_INTRADAY") || function.equals("TIME_SERIES_DAILY")){ 
             JsonNode data = api.fetchFinancialData( function, symbol, "60min", "full", true);
             if(!(data.has("Time Series (60min)" ) || data.has("Time Series (Daily)"))) {
               error = true;
