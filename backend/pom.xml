@@ -71,7 +71,7 @@
     <artifactId>frontend-maven-plugin</artifactId>
     <version>1.6</version>
     <configuration>
-        <workingDirectory>stock_tracker_demo</workingDirectory>
+        <workingDirectory>frontend</workingDirectory>
         <installDirectory>target</installDirectory>
     </configuration>
     <executions>
@@ -113,7 +113,7 @@
             <configuration>
                 <target>
                     <copy todir="${project.build.directory}/classes/public">
-                        <fileset dir="${project.basedir}/stock_tracker_demo/build"/>
+                        <fileset dir="${project.basedir}/frontend/build"/>
                     </copy>
                 </target>
             </configuration>
