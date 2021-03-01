@@ -43,7 +43,6 @@ const Graph:FC  = () => {
           <YAxis
             domain={['auto', 'auto']}
             allowDataOverflow = {true}
-            interval={0}
             axisLine={false}
             tickLine={false}
             tickFormatter = {price => Number.parseFloat(price).toFixed(2)}

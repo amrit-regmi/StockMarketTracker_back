@@ -29,7 +29,7 @@ const getUrl = (): {apiBaseUrl: string | null , baseurl: string} => {
 
 export const symbol_search_api =(keyword:string) : string => {
   const { baseurl,apiBaseUrl } =  getUrl()
-  const route = apiBaseUrl?'quote':'query'
+  const route = apiBaseUrl?'search':'query'
   return `${baseurl}/${route}?function=SYMBOL_SEARCH&keywords=${keyword}&apikey=${apikey[randomIndex(apikey.length)]}`
 }
 
