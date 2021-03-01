@@ -10,7 +10,11 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CompanyData {
+  private static final Logger logger = LoggerFactory.getLogger(CompanyData.class);
   private String symbol;
   private String dataPath;
 
@@ -58,10 +62,10 @@ public class CompanyData {
       bw.write(content);
       bw.close();
 
-      System.out.println( dataType + "_data saved for " + symbol + " @"+ dataPath );
+      logger.info( dataType + "_data saved for " + symbol + " @"+ dataPath );
 
   } catch (IOException e) {
-    System.out.println(e.getMessage());
+    logger.info(e.getMessage());
   }
 
   }

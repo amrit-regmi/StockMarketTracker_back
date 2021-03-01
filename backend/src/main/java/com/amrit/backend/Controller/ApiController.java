@@ -27,8 +27,8 @@ public class ApiController {
   }
   
   @GetMapping(path="/search", produces = "application/json")
-  public JsonNode getSearch(@RequestParam String function, @RequestParam String keyword) throws Exception {
-    JsonNode data = api.search(function,keyword);
+  public JsonNode getSearch(@RequestParam String function, @RequestParam String keywords) throws Exception {
+    JsonNode data = api.search(function,keywords);
     return data;
   }
 }

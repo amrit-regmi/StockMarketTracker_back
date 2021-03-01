@@ -17,9 +17,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AlphavantageApi {
+  private static final Logger logger = LoggerFactory.getLogger(AlphavantageApi.class);
   private final RestTemplate dataFetcher = new RestTemplate();
   private final ObjectMapper mapper = new ObjectMapper();
   private final ApiConfiguration config;
@@ -40,7 +43,7 @@ public class AlphavantageApi {
    */
   public JsonNode fetchFinancialData(String function, String symbol, String interval, String outputsize ,boolean checkCache) throws Exception {
       String url;
-      if (function == "TIME_SERIES_INTRADAY"){
+      if (function.equals("TIME_SERIES_INTRADAY")){
         url = config.getEndPoint() + "function=" +function +"&symbol=" + symbol + "&interval=" + interval + "&outputsize=" + outputsize + "&apikey=" + config.getApiKey();
       }
       else {
@@ -48,6 +51,7 @@ public class AlphavantageApi {
         url = config.getEndPoint() + "function=" +function +"&symbol=" + symbol  + "&outputsize=" + outputsize + "&apikey=" + config.getApiKey();
       }
 
+    //System.out.println(function+interval);
     /**First fetch data from aplphavantage  */
     String result = dataFetcher.getForObject(url, String.class);
     JsonNode data = mapper.readTree(result);
@@ -72,7 +76,7 @@ public class AlphavantageApi {
         
         /**Compare the saved data with fetched  data and save if newer data */
         SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd");
-        if(function == "TIME_SERIES_INTRADAY" ) dateFormat.applyPattern("yyyy-MM-dd hh:mm:ss"); 
+        if(function.equals("TIME_SERIES_INTRADAY") ) dateFormat.applyPattern("yyyy-MM-dd hh:mm:ss"); 
         
         Date savedDate =  dateFormat.parse(savedData_json.path("Meta Data").get("3. Last Refreshed").asText());
         Date dataDate =  dateFormat.parse(data.path("Meta Data").get("3. Last Refreshed").asText());
@@ -113,19 +117,19 @@ public class AlphavantageApi {
     String savedData =  cachedCompany.readData("Quote");
 
     /**If the cached company data exist and fetched data is not valid return saved data */
-    if(savedData != null && !data.has("Global Quote")){
+    if(savedData != null && !data.has("Global Quote")){      
         JsonNode savedData_json = mapper.readTree(savedData);
         return savedData_json; 
     } 
 
     /**If the data is valid */
-    if(data.has("Global Quote")){
+    if(data.has("Global Quote")) {
       if(savedData != null){
-        JsonNode savedData_json = mapper.readTree(savedData);
+        JsonNode savedData_json = mapper.readTree(savedData); 
         /**Compare the saved data with fetched  data and save if newer data */
         SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd");
-        Date savedDate =  dateFormat.parse(savedData_json.get("07. latest trading day").asText());
-        Date dataDate =  dateFormat.parse(data.path("Meta Data").get("07. latest trading day").asText());
+        Date savedDate =  dateFormat.parse(savedData_json.path("Global Quote").get("07. latest trading day").asText());
+        Date dataDate =  dateFormat.parse(data.path("Global Quote").get("07. latest trading day").asText());
        
         if(savedDate.before(dataDate)){
           cachedCompany.writeData("Quote", result);
@@ -188,14 +192,15 @@ public class AlphavantageApi {
       companies.forEach((k,v) -> {
         if(k.toString().toLowerCase().contains(keyword) || v.toString().toLowerCase().contains(keyword)){
           ObjectNode match = mapper.createObjectNode();
-          match.put("1. symbol", v.toString());
-          match.put("2. name", k.toString());
+          match.put("1. symbol", k.toString());
+          match.put("2. name", v.toString());
+          match.put("3. type","Equity");
           match.put("4. region", "United States");
           arrayNode.add(match);          
         }
       });
     } catch (IOException e) {
-      System.out.println(e.getMessage());
+      logger.error(e.getMessage());
     }
 
     JsonNode newResult = result.deepCopy();
