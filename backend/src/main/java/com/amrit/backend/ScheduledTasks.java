@@ -1,10 +1,11 @@
 package com.amrit.backend;
 
-import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Properties;
-import java.util.Set;
+import java.util.Map;
+
+import com.amrit.backend.Configuration.ApiConfiguration;
 import com.fasterxml.jackson.databind.JsonNode;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,31 +24,33 @@ public class ScheduledTasks {
   private static final Logger logger = LoggerFactory.getLogger(Scheduled.class);
   @Autowired
   private AlphavantageApi api;
-  private Properties companies = new Properties();
+  @Autowired ApiConfiguration config;
 
    //Fetch data every 24 hours 
   @Scheduled(fixedDelay = 24*60*60*1000)
   public void scheduleTaskWithFixedDelay() throws Exception {
     logger.info("Auto Api Fetching Initialised @ "+ LocalDateTime.now());
-    try {
-      InputStream is = getClass().getClassLoader().getResourceAsStream("companies.properties");
-      companies.load(is);
-        /**Get all the hardcoded company symbols */
-        Set<String> companySymbols = companies.stringPropertyNames();
-        for (String symbol : companySymbols) {
-         fetchData("TIME_SERIES_INTRADAY", symbol); 
-         pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
+    Map<String, String> companies = config.getcompanies();
+   
+        
+      /** Get all the hardcoded company symbols */
+        companies.forEach((symbol, name) -> {
+          try { fetchData("TIME_SERIES_INTRADAY", symbol); 
+          pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
        
-         fetchData("TIME_SERIES_DAILY", symbol);
-         pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
+          fetchData("TIME_SERIES_DAILY", symbol);
+          pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
          
           fetchData("GLOBAL_QUOTE",symbol);
           pause(12); //Pausing 12 seconds before another query API quoata is 5 queries per min so 12sec sleep 
         }
-      } catch (InterruptedException ex) {
-        logger.error("Ran into an error {}", ex);
-        throw new IllegalStateException(ex);
-    }
+        catch (InterruptedException ex) {
+          logger.error("Ran into an error {}", ex);
+          throw new IllegalStateException(ex);
+      } catch (Exception e) {
+        logger.error("Ran into an error {}", e);
+          }
+      } );
   }
     /**Helper method to sleep in seconds */
     public void pause(double seconds)
@@ -100,7 +103,7 @@ public class ScheduledTasks {
           errorCount= 0;
         }
       
-      } while (error && errorCount < 1);
+      } while (error && errorCount < 4);
 
       if(error){ 
         logger.info(function +" repeateadly failed for "+ symbol +" , Skipping Now");
