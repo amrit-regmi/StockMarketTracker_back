@@ -1,10 +1,9 @@
 package com.amrit.backend;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
+import java.util.Map;
 
 import com.amrit.backend.Configuration.ApiConfiguration;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,12 +16,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class AlphavantageApi {
-  private static final Logger logger = LoggerFactory.getLogger(AlphavantageApi.class);
   private final RestTemplate dataFetcher = new RestTemplate();
   private final ObjectMapper mapper = new ObjectMapper();
   private final ApiConfiguration config;
@@ -41,57 +37,66 @@ public class AlphavantageApi {
    * @return JsonNode 
    * @throws Exception
    */
-  public JsonNode fetchFinancialData(String function, String symbol, String interval, String outputsize ,boolean checkCache) throws Exception {
+  
+   public JsonNode fetchFinancialData(String function, String symbol, String interval, String outputsize ,boolean checkCache) throws Exception {
       String url;
       if (function.equals("TIME_SERIES_INTRADAY")){
-        url = config.getEndPoint() + "function=" +function +"&symbol=" + symbol + "&interval=" + interval + "&outputsize=" + outputsize + "&apikey=" + config.getApiKey();
+        url = config.getendPoint() + "function=" +function +"&symbol=" + symbol + "&interval=" + interval + "&outputsize=" + outputsize + "&apikey=" + config.getkey();
       }
       else {
         interval = "Daily";
-        url = config.getEndPoint() + "function=" +function +"&symbol=" + symbol  + "&outputsize=" + outputsize + "&apikey=" + config.getApiKey();
+        url = config.getendPoint() + "function=" +function +"&symbol=" + symbol  + "&outputsize=" + outputsize + "&apikey=" + config.getkey();
       }
 
-    //System.out.println(function+interval);
-    /**First fetch data from aplphavantage  */
-    String result = dataFetcher.getForObject(url, String.class);
-    JsonNode data = mapper.readTree(result);
+      /**First fetch data from aplphavantage  */
+      String result = dataFetcher.getForObject(url, String.class);
+      JsonNode data = mapper.readTree(result);
 
-    /**If the checkCache is not true return the response from server as is*/
-    if(!checkCache) return data;
+      /**If the checkCache is not true return the response from server as is*/
+      if(!checkCache) return data;
 
-    /**Get saved data if exist */
-    CompanyData cachedCompany = new CompanyData(symbol);
-    String savedData =  cachedCompany.readData(interval);
+      /**If the compnay is one of hardoced companies */
+      if(searchInHardCodedCompany(symbol).size() > 0 ) { //demo key is used during test we want to allow her efor testing
+        /**Get saved data if exist */
 
-    /**If the cached company data exist and fetched data is not valid return saved data */
-    if(savedData != null && !data.has("Time Series ("+interval+")")){
-        JsonNode savedData_json = mapper.readTree(savedData);
-        return savedData_json; 
-    } 
+        CompanyData cachedCompany = new CompanyData(symbol);
+        String savedData =  cachedCompany.readData(interval);
 
-    /**If fetched data is valid check with saved data */
-    if(data.has("Time Series ("+interval+")")){
-      if(savedData != null){
-        JsonNode savedData_json = mapper.readTree(savedData);
-        
-        /**Compare the saved data with fetched  data and save if newer data */
-        SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd");
-        if(function.equals("TIME_SERIES_INTRADAY") ) dateFormat.applyPattern("yyyy-MM-dd hh:mm:ss"); 
-        
-        Date savedDate =  dateFormat.parse(savedData_json.path("Meta Data").get("3. Last Refreshed").asText());
-        Date dataDate =  dateFormat.parse(data.path("Meta Data").get("3. Last Refreshed").asText());
+        /**If the cached company data exist and fetched data is not valid return saved data */
+        if(savedData != null && !data.has("Time Series ("+interval+")")){
+          JsonNode savedData_json = mapper.readTree(savedData);
+          
+          return savedData_json; 
+        } 
+
        
-        if(savedDate.before(dataDate)){
-          cachedCompany.writeData(interval, result);
+        /**If fetched data is valid check with saved data */
+        if(data.has("Time Series ("+interval+")")){
+          
+          /**If saved data doesnot exist write to file and return */
+          if(savedData == null){
+            cachedCompany.writeData(interval, result);
+            return data;
+          }
+
+          JsonNode savedData_json = mapper.readTree(savedData);
+          
+          /**Compare the saved data with fetched  data and save if newer data */
+          SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd");
+          if(function.equals("TIME_SERIES_INTRADAY") ) dateFormat.applyPattern("yyyy-MM-dd hh:mm:ss"); 
+          
+          Date savedDate =  dateFormat.parse(savedData_json.path("Meta Data").get("3. Last Refreshed").asText());
+          Date dataDate =  dateFormat.parse(data.path("Meta Data").get("3. Last Refreshed").asText());
+          
+          /**If saved data is older than the fetched data save */
+          if(savedDate.before(dataDate)){
+            cachedCompany.writeData(interval, result);
+          }
         }
-      } 
-      else{//If nosaved data 
-        cachedCompany.writeData(interval, result);
       }
-    }
-    
-    /**Return the response as it is */
-    return data;
+      /**Return the data as is  */
+      return data;
+
   }
 
    /**
@@ -103,44 +108,52 @@ public class AlphavantageApi {
    * @throws Exception
    */
   public JsonNode fetchQuote(String function,String symbol ,boolean checkCache) throws Exception {
-    String url = config.getEndPoint()+"function="+function+"&symbol="+ symbol +"&apikey=" + config.getApiKey();
+    String url = config.getendPoint()+"function="+function+"&symbol="+ symbol +"&apikey=" + config.getkey();
     String result = dataFetcher.getForObject(url, String.class);
     JsonNode data = mapper.readTree(result);
 
     /**If the checkCache is not true return the response from server as is*/
-    if(!checkCache) {
+    if(!checkCache ) {
       return data;
     }
 
-    /**Get saved data if exist */
-    CompanyData cachedCompany = new CompanyData(symbol);
-    String savedData =  cachedCompany.readData("Quote");
+    /**If the compnay is one of hardoced companies */
+    if(searchInHardCodedCompany(symbol).size() > 0 ) { 
+      /**Get saved data if exist */
 
-    /**If the cached company data exist and fetched data is not valid return saved data */
-    if(savedData != null && !data.has("Global Quote")){      
-        JsonNode savedData_json = mapper.readTree(savedData);
-        return savedData_json; 
-    } 
 
-    /**If the data is valid */
-    if(data.has("Global Quote")) {
-      if(savedData != null){
+      CompanyData cachedCompany = new CompanyData(symbol);
+      String savedData =  cachedCompany.readData("Quote");
+
+      /**If the cached company data exist and fetched data is not valid return saved data */
+      if(savedData != null && !data.has("Global Quote")){      
+          JsonNode savedData_json = mapper.readTree(savedData);
+          return savedData_json; 
+      } 
+
+      /**If the data is valid */
+      if(data.has("Global Quote")) {
+
+        /**If saved data doesnot exist write to file and return */
+        if(savedData == null){
+          cachedCompany.writeData("Quote" ,result);
+          return data;
+        }
+        
         JsonNode savedData_json = mapper.readTree(savedData); 
         /**Compare the saved data with fetched  data and save if newer data */
         SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd");
         Date savedDate =  dateFormat.parse(savedData_json.path("Global Quote").get("07. latest trading day").asText());
         Date dataDate =  dateFormat.parse(data.path("Global Quote").get("07. latest trading day").asText());
-       
+      
+         /**If saved data is older than the fetched data save */
         if(savedDate.before(dataDate)){
           cachedCompany.writeData("Quote", result);
         }
-      } 
-      else{//If nosaved data 
-        cachedCompany.writeData("Quote", result);
       }
     }
-    return data;
 
+    return data;
   }
 
 /**
@@ -150,7 +163,7 @@ public class AlphavantageApi {
  * @return Json
  */
   public JsonNode search(String function, String keyword) throws JsonMappingException, JsonProcessingException {
-    String url = config.getEndPoint() + "function="+function+"&keywords =" + keyword + "&apikey=" + config.getApiKey();
+    String url = config.getendPoint() + "function="+function+"&keywords=" + keyword + "&apikey=" + config.getkey();
     String result = dataFetcher.getForObject(url, String.class);
 
     JsonNode data = mapper.readTree(result);
@@ -160,52 +173,45 @@ public class AlphavantageApi {
      * companies
      */
     if (data.get("bestMatch") == null) {
-      JsonNode matches = searchInHardCodedCompany(keyword);
+      ArrayList<String[]> matches = searchInHardCodedCompany(keyword);
       
-      //Return the search result only if there is a match 
-      if(matches.get("bestMatches").size() > 0){
-        return matches;
+      //If the local search returns a match 
+      if(matches.size() > 0){
+        ObjectNode wrapper = mapper.createObjectNode();
+        ArrayNode node = mapper.createArrayNode();
+        wrapper.set("bestMatches",node);
+
+        matches.forEach( k-> {
+          ObjectNode match = mapper.createObjectNode();
+          match.put("1. symbol", k[0]);
+          match.put("2. name", k[1]);
+          match.put("3. type","Equity");
+          match.put("4. region", "United States");
+          node.add(match);     
+        });
+
+        JsonNode t = wrapper.deepCopy();
+        return t;       
       }
     }
     return data;
   }
 
-  public void setApi(String api) {
-
-  }
-
   /**
    * Search the if the keyword matches the company stored in companies property 
    * @keyword keyword to search 
-   * @return Json nodewith mathed results  on Array onbestMatches key,if no match bestMatch has empty array
+   * @return Arraylist[symbol,name] with matches
    * */
-  private JsonNode searchInHardCodedCompany(String keyword) {
-    Properties companies = new Properties();
-    ObjectNode result = mapper.createObjectNode();
-    ArrayNode arrayNode = mapper.createArrayNode();
-
-    result.set("bestMatches",arrayNode);
-   
-    try {
-      InputStream is = getClass().getClassLoader().getResourceAsStream("companies.properties");
-      companies.load(is);
+  private ArrayList<String[]> searchInHardCodedCompany(String keyword) {
+    Map<String,String> companies = config.getcompanies();
+    ArrayList<String[]> matches = new ArrayList<String[]>();
       companies.forEach((k,v) -> {
-        if(k.toString().toLowerCase().contains(keyword) || v.toString().toLowerCase().contains(keyword)){
-          ObjectNode match = mapper.createObjectNode();
-          match.put("1. symbol", k.toString());
-          match.put("2. name", v.toString());
-          match.put("3. type","Equity");
-          match.put("4. region", "United States");
-          arrayNode.add(match);          
+        if(k.toLowerCase().contains(keyword.toLowerCase()) || v.toLowerCase().contains(keyword.toLowerCase())){
+          String[] data =new String []{k,v};
+          matches.add(data);     
         }
       });
-    } catch (IOException e) {
-      logger.error(e.getMessage());
-    }
-
-    JsonNode newResult = result.deepCopy();
-    return newResult;
-    
+    return matches;
   }  
 }
 

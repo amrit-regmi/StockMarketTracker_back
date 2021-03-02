@@ -8,10 +8,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
+@EnableScheduling
+@ConditionalOnProperty(
+        name = "io.reflectoring.scheduling.enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class ScheduledTasks {
   private static final Logger logger = LoggerFactory.getLogger(Scheduled.class);
   @Autowired
@@ -84,7 +91,7 @@ public class ScheduledTasks {
             logger.info(e.getMessage());
         }
         
-        if(error  && errorCount < 2){
+        if(error  && errorCount < 5){
           errorCount =errorCount +1;
           logger.info(function +" failed for "+ symbol +"  @ "+ LocalDateTime.now() + " Retrying attempt: " + errorCount );
           pause(60);

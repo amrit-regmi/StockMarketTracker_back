@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path="/")
 public class ApiController {
   @Autowired
-  AlphavantageApi api;
+  private AlphavantageApi api;
   
   @GetMapping(path="/query", produces = "application/json")
   public JsonNode getFinancialData(@RequestParam String function, String symbol, @RequestParam(required = false) String interval, String outputsize) throws Exception {
