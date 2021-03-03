@@ -1,6 +1,8 @@
 package com.amrit.backend;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -26,7 +28,6 @@ public class AlphavantageApi {
     public AlphavantageApi(ApiConfiguration config) {
         this.config = config;
     }
-
   /**
    * Fetches intraday data if the api doesnot respond with properly formatted data return the  cached comapny data if exist.
    * @param function alphavantage api function
@@ -47,54 +48,52 @@ public class AlphavantageApi {
         interval = "Daily";
         url = config.getendPoint() + "function=" +function +"&symbol=" + symbol  + "&outputsize=" + outputsize + "&apikey=" + config.getkey();
       }
+      
+      Boolean isHardCoded = searchInHardCodedCompany(symbol).size() > 0?true:false;
+ 
+      CompanyData cachedCompany = new CompanyData(symbol);
+      String savedData =  cachedCompany.readData(interval);
+
+      /**If the checkCache is enabled and data is hardcoded check on cache*/
+      if(isHardCoded && checkCache){
+        Date yesterday = Date.from(Instant.now().minus(Duration.ofDays(1)));
+
+        if(savedData != null){ //If the data exist on cache
+          JsonNode savedData_json = mapper.readTree(savedData);
+        
+          SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd");
+          if(function.equals("TIME_SERIES_INTRADAY") ) dateFormat.applyPattern("yyyy-MM-dd hh:mm:ss"); 
+            
+          Date savedDate =  dateFormat.parse(savedData_json.path("Meta Data").get("3. Last Refreshed").asText());
+  
+          if(!savedDate.before(yesterday)){ // If data is less than 24 hours old
+            return savedData_json; 
+          }
+
+        }
+      }
 
       /**First fetch data from aplphavantage  */
       String result = dataFetcher.getForObject(url, String.class);
       JsonNode data = mapper.readTree(result);
 
-      /**If the checkCache is not true return the response from server as is*/
-      if(!checkCache) return data;
-
-      /**If the compnay is one of hardoced companies */
-      if(searchInHardCodedCompany(symbol).size() > 0 ) { //demo key is used during test we want to allow her efor testing
-        /**Get saved data if exist */
-
-        CompanyData cachedCompany = new CompanyData(symbol);
-        String savedData =  cachedCompany.readData(interval);
-
-        /**If the cached company data exist and fetched data is not valid return saved data */
-        if(savedData != null && !data.has("Time Series ("+interval+")")){
-          JsonNode savedData_json = mapper.readTree(savedData);
-          
-          return savedData_json; 
-        } 
-
-       
-        /**If fetched data is valid check with saved data */
-        if(data.has("Time Series ("+interval+")")){
-          
-          /**If saved data doesnot exist write to file and return */
-          if(savedData == null){
-            cachedCompany.writeData(interval, result);
-            return data;
-          }
-
-          JsonNode savedData_json = mapper.readTree(savedData);
-          
-          /**Compare the saved data with fetched  data and save if newer data */
-          SimpleDateFormat dateFormat =new SimpleDateFormat("yyyy-MM-dd");
-          if(function.equals("TIME_SERIES_INTRADAY") ) dateFormat.applyPattern("yyyy-MM-dd hh:mm:ss"); 
-          
-          Date savedDate =  dateFormat.parse(savedData_json.path("Meta Data").get("3. Last Refreshed").asText());
-          Date dataDate =  dateFormat.parse(data.path("Meta Data").get("3. Last Refreshed").asText());
-          
-          /**If saved data is older than the fetched data save */
-          if(savedDate.before(dataDate)){
-            cachedCompany.writeData(interval, result);
-          }
-        }
+      /**If cachecheck is disabled respond with data as is*/
+      if(!checkCache ) {
+        return data;
       }
-      /**Return the data as is  */
+
+      /**If  request is not successful and the cache exist */
+      if(!data.has("Time Series ("+interval+")") &&  savedData != null){
+        JsonNode savedData_json = mapper.readTree(savedData);
+        return savedData_json; 
+      } 
+
+      /**If fetched data is valid and ishardcoded company then save to cache*/
+      if(data.has("Time Series ("+interval+")") && isHardCoded){
+          cachedCompany.writeData(interval, result);
+      }
+      
+      /**Return the data*/
       return data;
 
   }

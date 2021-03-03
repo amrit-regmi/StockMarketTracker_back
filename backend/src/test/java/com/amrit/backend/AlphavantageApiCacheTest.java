@@ -53,7 +53,7 @@ public class AlphavantageApiCacheTest {
   
     @Test
     public void failed_api_Request_For_Company_not_in_Cache_Should_not_Have_Data() throws Exception { 
-        apiConfig.setkey("FakeKey");
+        apiConfig.setkey("");
         JsonNode financialData = api.fetchFinancialData("TIME_SERIES_INTRADAY", "IBM", "5min", "full",true);
         assertAll("JsonResponse",
         ()-> assertNull(financialData.get("Meta Data")),
@@ -73,6 +73,7 @@ public class AlphavantageApiCacheTest {
       apiConfig.setkey("demo");
       
       JsonNode financialData = api.fetchFinancialData("TIME_SERIES_INTRADAY", "IBM", "5min", "full",true);
+      
       assertAll("JsonResponse",
         ()-> assertNotNull(financialData.get("Meta Data")),
         ()-> assertNotNull(financialData.get("Time Series (5min)"))
@@ -82,8 +83,9 @@ public class AlphavantageApiCacheTest {
       Path path = Paths.get(file);
       assertEquals(Files.exists(path),true);
 
-      apiConfig.setkey("fakeKey");
+      apiConfig.setkey("");
       JsonNode newfinancialData = api.fetchFinancialData("TIME_SERIES_INTRADAY", "IBM", "5min", "full",true);
+
       
       assertAll("JsonResponse",
         ()-> assertNotNull(newfinancialData.get("Meta Data")),

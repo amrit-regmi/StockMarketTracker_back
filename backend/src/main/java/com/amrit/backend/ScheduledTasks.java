@@ -84,7 +84,6 @@ public class ScheduledTasks {
           if(function == "GLOBAL_QUOTE" ){
             JsonNode data = api.fetchQuote(function, symbol, true);
               if(!data.has("Global Quote")) {
-                System.out.println(data);
                 error = true;
               }
             }
