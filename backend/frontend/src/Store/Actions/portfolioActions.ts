@@ -25,12 +25,18 @@ export type PortfolioAction =
    */
 
 export const getCompanyQuote = async (dispatch: Dispatch<dispatchActions>,data :{symbol:string ,name:string}) : Promise<void> => {
+  let errorType='default'
   try {
     const comapanyQuote = await getCompanyGlobalQuote(data.symbol)
 
     /**Catching Api Errors */
-    if(comapanyQuote['Error Message']  || comapanyQuote['Information'] || comapanyQuote['Note']  || !comapanyQuote['Global Quote']){
-      throw new Error(comapanyQuote['Error Message'] || comapanyQuote['Information'] || comapanyQuote['Note']  || 'Somtheng went wrong while retriveing company information')
+    if(!comapanyQuote['Global Quote'] ){
+      errorType = data.symbol
+      if(comapanyQuote['Error Message'] ) errorType = data.symbol+'_Error'
+      if(comapanyQuote['Information'] ) errorType = data.symbol+'_Information'
+      if(comapanyQuote['Note'] ) errorType = data.symbol+'_Note'
+
+      throw new Error(comapanyQuote['Error Message'] || comapanyQuote['Information'] || comapanyQuote['Note']  || 'Somtheng went wrong while retriveing full financial data for '+data.symbol)
     }
 
     const companyData = {
@@ -52,7 +58,10 @@ export const getCompanyQuote = async (dispatch: Dispatch<dispatchActions>,data :
     })
 
   } catch (error) {
-    setError(dispatch,{ error:error.message })
+    setError(dispatch,{
+      type: errorType,
+      error:error.message
+    })
 
   }}
 

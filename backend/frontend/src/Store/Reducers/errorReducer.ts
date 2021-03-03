@@ -9,7 +9,7 @@ const errorReducer = (state:store , action : ErrorAction ) :store => {
   switch(action.type){
 
   case SET_ERROR:
-    return { ...state, errors: { ...state.errors, [Math.random().toString(36).slice(2)]: action.payload.error } }
+    return { ...state, errors: { ...state.errors, [action.payload.type]: action.payload.error } }
 
   case DISMISS_ERROR:
     const copyState = { ...state }

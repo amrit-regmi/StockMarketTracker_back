@@ -24,10 +24,11 @@ export type SearchAction =
    * @param data {keyword: string}
    */
 export const searchCompany = async (dispatch:Dispatch<dispatchActions>, data:{keyword:string}):Promise<void> => {
+
   try {
     const searchData =  await services.searchByKeyword(data.keyword)
     /**Catching Api Errors */
-    if(searchData['Error Message']  || searchData['Information'] || searchData['Note']  || !searchData.bestMatches){
+    if(!searchData.bestMatches){
       throw new Error(searchData['Error Message'] || searchData['Information'] || searchData['Note']  || 'Somtheng went wrong while searching')
     }
 
@@ -38,7 +39,9 @@ export const searchCompany = async (dispatch:Dispatch<dispatchActions>, data:{ke
       }
     })
   } catch (error) {
-    setError(dispatch,{ error:error.message })
+    setError(dispatch,{
+      type: 'searchError',
+      error:error.message })
   }
 }
 

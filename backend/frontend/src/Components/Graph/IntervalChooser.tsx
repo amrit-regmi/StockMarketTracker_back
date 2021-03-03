@@ -22,7 +22,7 @@ const IntervalChooser:FC = () => {
 
   return (
     <div>
-      <Menu color='green'text fluid style={{ marginLeft:'25px' }}>
+      <Menu color='green'text fluid style={{ marginLeft:'25px' }} stackable>
         {intervalLabels.map((label) =>
           <Menu.Item name = {label} key={label} active={graph.currentInterval === label}
             style={

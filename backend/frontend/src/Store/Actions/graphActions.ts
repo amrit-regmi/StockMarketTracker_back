@@ -48,6 +48,7 @@ export type GraphAction =
 export const getFinancialData = async ( dispatch:Dispatch<dispatchActions>, data:{ symbol:string , interval:intervalLabel ,color:string } ) : Promise<void> => {
   let financialdata
   let dataInterval = 'Daily'
+  let errorType=''
   try {
     switch (data.interval){
     case '10 days':
@@ -61,8 +62,13 @@ export const getFinancialData = async ( dispatch:Dispatch<dispatchActions>, data
     }
 
     /**Catching Api Errors */
-    if(financialdata['Error Message']  || financialdata['Information'] || financialdata['Note']  || !financialdata[`Time Series (${dataInterval})`]){
-      throw new Error(financialdata['Error Message'] || financialdata['Information'] || financialdata['Note']  || 'Somtheng went wrong while retriveing full financial data')
+    if(!financialdata[`Time Series (${dataInterval})`] ){
+      errorType = data.symbol
+      if(financialdata['Error Message'] ) errorType = data.symbol+'_Error'
+      if(financialdata['Information'] ) errorType = data.symbol+'_Information'
+      if(financialdata['Note'] ) errorType = data.symbol+'_Note'
+
+      throw new Error(financialdata['Error Message'] || financialdata['Information'] || financialdata['Note']  || 'Somtheng went wrong while retriveing full financial data for '+data.symbol)
     }
 
     return dispatch({
@@ -76,7 +82,10 @@ export const getFinancialData = async ( dispatch:Dispatch<dispatchActions>, data
       } })
 
   } catch (error) {
-    setError(dispatch,{ error:error.message })
+    setError(dispatch,{
+      type:errorType,
+      error:error.message
+    })
 
   }
 

@@ -6,9 +6,10 @@ import { Container, Segment, SegmentGroup } from 'semantic-ui-react'
 import CompanySearch from './Components/CompanySearch'
 import Portfolio from './Components/Portfolio'
 import { StoreProvider } from './Store/StoreProvider'
-import Error from './Components/Error/Error'
+import Error from './Components/Error'
 import { useParams } from 'react-router-dom'
 import { resetBaseApiBaseUrl, setBaseApiBaseUrlToHost } from './Services/apiBaseUrl'
+import InfoBar from './Components/InfoBar'
 
 
 const App:FC = () =>  {
@@ -27,6 +28,7 @@ const App:FC = () =>  {
   return (
     <Container style= {{ minWidth:'95%' }}>
       <StoreProvider>
+        <InfoBar></InfoBar>
         <Error/>
         <SegmentGroup horizontal  >
           <Segment>

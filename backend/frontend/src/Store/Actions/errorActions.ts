@@ -7,6 +7,7 @@ export type ErrorAction =
     type: 'SET_ERROR',
     payload: {
       error: string,
+      type:string
     }
   }
 | {
@@ -17,10 +18,11 @@ export type ErrorAction =
   }
 
 /**Sets Error Notification */
-export const setError =  (dispatch:Dispatch<dispatchActions>, data:{ error:string} ): void => {
+export const setError =  (dispatch:Dispatch<dispatchActions>, data:{ type:string,error:string} ): void => {
   return dispatch ({
     type: SET_ERROR,
     payload:{
+      type: data.type,
       error:data.error
     }
   })
