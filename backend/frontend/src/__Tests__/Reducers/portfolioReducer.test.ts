@@ -17,7 +17,7 @@ describe( 'Test portfolio actions andreduce', () => {
         }
       },
 
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'as intervalLabel,
         data: {
           testcompany: {
@@ -48,7 +48,7 @@ describe( 'Test portfolio actions andreduce', () => {
           symbol:'te2', price:'1', changePercent:'1', visible: true
         }
       },
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'as intervalLabel,
         data: {
           testcompany2: {
@@ -72,7 +72,7 @@ describe( 'Test portfolio actions andreduce', () => {
           symbol:'te', price:'1', changePercent:'1', visible: true
         },
       },
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'as intervalLabel,
       }
     }
@@ -98,7 +98,7 @@ describe( 'Test portfolio actions andreduce', () => {
           symbol:'te2', price:'1', changePercent:'1', visible: true
         }
       },
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'
       }
     })

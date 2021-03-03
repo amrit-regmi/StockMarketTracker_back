@@ -51,6 +51,7 @@ export type search = {
 
 export type graph = {
   currentInterval : intervalLabel,
+  loading : string[]
   data ?: companies
 }
 

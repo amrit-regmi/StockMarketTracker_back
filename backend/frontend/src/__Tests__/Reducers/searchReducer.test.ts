@@ -6,7 +6,7 @@ describe('Tests Search Actions and Reducers', () => {
     test('set_seraching_action changes search state to loading', () => {
       const previousState = {
         portfolio:{},
-        graph:{
+        graph:{ loading:[],
           currentInterval:'10 days'as intervalLabel
         }
       }
@@ -14,7 +14,7 @@ describe('Tests Search Actions and Reducers', () => {
       expect(newState).toEqual(
         {
           portfolio:{},
-          graph:{
+          graph:{ loading:[],
             currentInterval:'10 days'
           },
           search:{ loading:true }
@@ -25,7 +25,7 @@ describe('Tests Search Actions and Reducers', () => {
     test('get_search_result changes sets data to search state',() =>  {
       const previousState = {
         portfolio:{},
-        graph:{
+        graph:{ loading:[],
           currentInterval:'10 days'as intervalLabel
         }
       }
@@ -38,7 +38,7 @@ describe('Tests Search Actions and Reducers', () => {
       expect(newState).toEqual(
         {
           portfolio:{},
-          graph:{
+          graph:{ loading:[],
             currentInterval:'10 days'
           },
 
@@ -51,7 +51,7 @@ describe('Tests Search Actions and Reducers', () => {
 
       const previousState = {
         portfolio:{},
-        graph:{
+        graph:{ loading:[],
           currentInterval:'10 days'as intervalLabel
         },
         search:{ loading:false ,results:[{ '1. symbol':'TEST','2. name':'Testing' }] }
@@ -62,7 +62,7 @@ describe('Tests Search Actions and Reducers', () => {
 
       expect(newState).toEqual( {
         portfolio:{},
-        graph:{
+        graph:{ loading:[],
           currentInterval:'10 days'
         },
         search: undefined })

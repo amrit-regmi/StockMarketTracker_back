@@ -5,12 +5,31 @@ import { GraphAction } from '../Actions/graphActions'
 
 export const SET_INTERVAL = 'SET_INTERVAL'
 export const SET_HIGHLIGHT_LINE = 'SET_HIGHLIGHT_LINE'
+export const SET_DATA_FETCHING = 'SET_DATA_FETCHING'
 export const GET_GRAPH_FINANCIAL_DATA = 'GET_GRAPH_FINANCIAL_DATA'
 export const CHANGE_LINE_COLOUR = 'CHANGE_LINE_COLOUR'
 export const SHOW_ON_GRAPH = 'SHOW_ON_GRAPH'
 
 const graphReducer = (state:store , action : GraphAction ) :store => {
   switch(action.type){
+  case  SET_DATA_FETCHING:
+    console.log('calledfetch',action.payload.symbol,action.payload.loading)
+    if(action.payload.loading){
+
+      if(state.graph.loading.includes(action.payload.symbol)){
+        return { ...state }
+      }
+      return{
+        ...state, graph: { ...state.graph, loading : [...state.graph.loading, action.payload.symbol] }
+      }
+    }else {
+      console.log('calledfetch',action.payload.symbol,action.payload.loading)
+      return{
+        ...state, graph: { ...state.graph, loading : state.graph.loading.filter(symbol => symbol !== action.payload.symbol) }
+      }
+
+    }
+
   case GET_GRAPH_FINANCIAL_DATA:
     return {
       ...state,
@@ -52,8 +71,6 @@ const graphReducer = (state:store , action : GraphAction ) :store => {
         ...state.portfolio[action.payload.symbol],visible: action.payload.visible
       }
     }, }
-
-
 
   default:
     return { ...state }

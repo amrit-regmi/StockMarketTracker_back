@@ -5,7 +5,7 @@ describe('test graph Reducer actions and reducer', () => {
   test('get_grapical_data updates graph state with data', () => {
     const previousState = {
       portfolio:{},
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'as intervalLabel
       }
     }
@@ -26,7 +26,7 @@ describe('test graph Reducer actions and reducer', () => {
     expect(finalState).toEqual(
       {
         portfolio:{},
-        graph:{
+        graph:{ loading:[],
           currentInterval:'10 days',
           data: { 'testCompany': {
             name:'testcompany',
@@ -46,7 +46,7 @@ describe('test graph Reducer actions and reducer', () => {
 
     const previousState = {
       portfolio:{},
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'as intervalLabel,
         data: {
           testcompany: {
@@ -71,7 +71,7 @@ describe('test graph Reducer actions and reducer', () => {
     expect(finalState).toEqual(
       {
         portfolio:{},
-        graph:{
+        graph:{ loading:[],
           currentInterval:'10 days'as intervalLabel,
           data: {
             testcompany: {
@@ -98,7 +98,7 @@ describe('test graph Reducer actions and reducer', () => {
           symbol:'te', price:'1', changePercent:'1', visible: true
         }
       },
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'as intervalLabel,
         data: {
           testcompany: {
@@ -128,7 +128,7 @@ describe('test graph Reducer actions and reducer', () => {
             symbol:'te', price:'1', changePercent:'1', visible: true
           }
         },
-        graph:{
+        graph:{ loading:[],
           currentInterval:'10 days'as intervalLabel,
           data: {
             testcompany: {
@@ -151,7 +151,7 @@ describe('test graph Reducer actions and reducer', () => {
           symbol:'te', price:'1', changePercent:'1', visible: true
         }
       },
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'as intervalLabel,
         data: {
           testcompany: {
@@ -178,7 +178,7 @@ describe('test graph Reducer actions and reducer', () => {
           symbol:'te', price:'1', changePercent:'1', visible: true
         }
       },
-      graph:{
+      graph:{ loading:[],
         currentInterval:'1 month',
         data: {
           testcompany: {
@@ -201,7 +201,7 @@ describe('test graph Reducer actions and reducer', () => {
           symbol:'te', price:'1', changePercent:'1', visible: true
         }
       },
-      graph:{
+      graph:{ loading:[],
         currentInterval:'10 days'as intervalLabel,
         data: {
           testcompany: {
@@ -231,7 +231,7 @@ describe('test graph Reducer actions and reducer', () => {
             symbol:'te', price:'1', changePercent:'1', visible: false
           }
         },
-        graph:{
+        graph:{ loading:[],
           currentInterval:'10 days'as intervalLabel,
           data: {
             testcompany: {

@@ -6,6 +6,7 @@ import { clipDataBasedonInterval } from '../../Utils/graphHelper'
 import  * as graphHelper from '../../Utils/graphHelper'
 import CustomTooltip from './CustomTooltip'
 import IntervalChooser from './IntervalChooser'
+import LoadingIndicator from './LoadinIndicator'
 
 const Graph:FC  = () => {
   const [{ graph  },] = useStore()
@@ -27,6 +28,7 @@ const Graph:FC  = () => {
 
   return (
     <Segment  >
+      <LoadingIndicator/>
       <IntervalChooser/>
       <ResponsiveContainer width='100%' aspect={5.0/3.0}>
         <LineChart data={data || []} margin= {{ top:20 }}>

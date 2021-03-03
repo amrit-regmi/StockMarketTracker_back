@@ -9,6 +9,7 @@ import { dispatchActions, store } from '../types'
 const initialState:store =  {
   portfolio:{},
   graph:{
+    loading:[],
     currentInterval:'10 days'
   }
 }

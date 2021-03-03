@@ -2,10 +2,18 @@ import { Dispatch } from 'react'
 import services from '../../Services/service'
 import { companies, dispatchActions, intervalLabel } from '../../types'
 import { formatToCoordinate } from '../../Utils/graphHelper'
-import { CHANGE_LINE_COLOUR, GET_GRAPH_FINANCIAL_DATA, SET_HIGHLIGHT_LINE, SET_INTERVAL, SHOW_ON_GRAPH } from '../Reducers/graphReducer'
+import { CHANGE_LINE_COLOUR, GET_GRAPH_FINANCIAL_DATA, SET_DATA_FETCHING, SET_HIGHLIGHT_LINE, SET_INTERVAL, SHOW_ON_GRAPH } from '../Reducers/graphReducer'
 import { setError } from './errorActions'
 
 export type GraphAction =
+  | {
+    type: 'SET_DATA_FETCHING',
+    payload: {
+      loading: boolean,
+      symbol:string
+    }
+  }
+
   | {
       type: 'SET_INTERVAL',
       payload: {
@@ -39,6 +47,7 @@ export type GraphAction =
     }
   }
 
+
 /**
  * Retrives the financial data for the selected company
  * @param dispatch dispatcher
@@ -50,6 +59,14 @@ export const getFinancialData = async ( dispatch:Dispatch<dispatchActions>, data
   let dataInterval = 'Daily'
   let errorType=''
   try {
+    dispatch({
+      type: SET_DATA_FETCHING,
+      payload:{
+        loading:true,
+        symbol: data.symbol
+      }
+
+    })
     switch (data.interval){
     case '10 days':
       dataInterval = '60min'
@@ -71,7 +88,7 @@ export const getFinancialData = async ( dispatch:Dispatch<dispatchActions>, data
       throw new Error(financialdata['Error Message'] || financialdata['Information'] || financialdata['Note']  || 'Somtheng went wrong while retriveing full financial data for '+data.symbol)
     }
 
-    return dispatch({
+    dispatch({
       type :GET_GRAPH_FINANCIAL_DATA,
       payload: {
         [data.symbol]: {
@@ -81,10 +98,28 @@ export const getFinancialData = async ( dispatch:Dispatch<dispatchActions>, data
         }
       } })
 
+    dispatch({
+      type: SET_DATA_FETCHING,
+      payload:{
+        loading:false,
+        symbol: data.symbol
+      }
+
+    })
+
   } catch (error) {
     setError(dispatch,{
       type:errorType,
       error:error.message
+    })
+
+    dispatch({
+      type: SET_DATA_FETCHING,
+      payload:{
+        loading:false,
+        symbol: data.symbol
+      }
+
     })
 
   }
@@ -96,7 +131,8 @@ export const getFinancialData = async ( dispatch:Dispatch<dispatchActions>, data
  * @param data {symbol:string company symbol}
  */
 export const highlightLine =  (dispatch:Dispatch<dispatchActions>, data:{symbol:string} ) : void => {
-  return dispatch({
+
+  dispatch({
     type : SET_HIGHLIGHT_LINE,
     payload:{
       symbol:data.symbol,
