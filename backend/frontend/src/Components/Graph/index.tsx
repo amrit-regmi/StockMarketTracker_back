@@ -9,7 +9,7 @@ import IntervalChooser from './IntervalChooser'
 import LoadingIndicator from './LoadinIndicator'
 
 const Graph:FC  = () => {
-  const [{ graph  },] = useStore()
+  const [{ graph ,portfolio },] = useStore()
   const [maxDate ,setMaxDate] = useState(0) //Oldest data in the record
 
   /** Modify the instance graph data to display only the data for current interval also verify the oldest data*/
@@ -50,14 +50,14 @@ const Graph:FC  = () => {
             tickFormatter = {price => Number.parseFloat(price).toFixed(2)}
           />
           {data && data.length && data.map( s =>
-            s.isNotVisible?null:
+            !portfolio[s.name].visible?null:
               <Line
                 key = {s.name}
                 activeDot= {{ strokeWidth: 1, r: 2 }}
                 connectNulls = {true}
                 type="linear"
                 dataKey="y"
-                stroke={s.color}
+                stroke={portfolio[s.name].color}
                 dot={false}
                 data={s.data }
                 name={s.name}

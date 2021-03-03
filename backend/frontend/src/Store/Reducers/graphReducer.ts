@@ -13,7 +13,6 @@ export const SHOW_ON_GRAPH = 'SHOW_ON_GRAPH'
 const graphReducer = (state:store , action : GraphAction ) :store => {
   switch(action.type){
   case  SET_DATA_FETCHING:
-    console.log('calledfetch',action.payload.symbol,action.payload.loading)
     if(action.payload.loading){
 
       if(state.graph.loading.includes(action.payload.symbol)){
@@ -23,7 +22,6 @@ const graphReducer = (state:store , action : GraphAction ) :store => {
         ...state, graph: { ...state.graph, loading : [...state.graph.loading, action.payload.symbol] }
       }
     }else {
-      console.log('calledfetch',action.payload.symbol,action.payload.loading)
       return{
         ...state, graph: { ...state.graph, loading : state.graph.loading.filter(symbol => symbol !== action.payload.symbol) }
       }
@@ -45,12 +43,7 @@ const graphReducer = (state:store , action : GraphAction ) :store => {
     return { ...state,graph:{ ...graphCopy } }
 
   case CHANGE_LINE_COLOUR:
-    const graphCopy1 = { ...state.graph }
-    if(!graphCopy1.data || !graphCopy1.data[action.payload.symbol] ){
-      return { ...state }
-    }
-    graphCopy1.data[action.payload.symbol]!.color=action.payload.color
-    return { ...state,graph:{ ...graphCopy1 }, portfolio: {
+    return { ...state, portfolio: {
       ...state.portfolio,[action.payload.symbol]:{
         ...state.portfolio[action.payload.symbol],color: action.payload.color as colors
       }
@@ -60,13 +53,8 @@ const graphReducer = (state:store , action : GraphAction ) :store => {
     return { ...state,graph:{ ...state.graph, currentInterval: action.payload.interval } }
 
   case SHOW_ON_GRAPH:
-    const graphCopy2 = { ...state.graph }
-    if(!graphCopy2.data || !graphCopy2.data[action.payload.symbol] ){
-      return { ...state }
-    }
 
-    graphCopy2.data[action.payload.symbol]!.isNotVisible = !action.payload.visible
-    return { ...state,graph:{ ...graphCopy2 }, portfolio: {
+    return { ...state, portfolio: {
       ...state.portfolio,[action.payload.symbol]:{
         ...state.portfolio[action.payload.symbol],visible: action.payload.visible
       }

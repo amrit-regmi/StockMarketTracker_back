@@ -20,7 +20,6 @@ const ErrorMessage:FC <{message:string, id:string}> = ({ message ,id }) => {
     <Message
       onDismiss= {() => dismissError()}
       error
-      floating
     >
       {message}
     </Message>

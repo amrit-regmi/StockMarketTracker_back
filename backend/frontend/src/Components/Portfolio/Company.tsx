@@ -15,7 +15,7 @@ const Company:FC <{company: companyDetail | undefined}>= ({ company }) => {
   useEffect(() => {
     const getFinancials = async() => {
       if(company && companySymbol) {
-        const interval:intervalLabel = graph?.currentInterval || '5 days'
+        const interval:intervalLabel = graph?.currentInterval || '10 days'
         getFinancialData(dispatch,{ symbol:companySymbol, interval , color:company.color })
       }
     }
@@ -37,6 +37,14 @@ const Company:FC <{company: companyDetail | undefined}>= ({ company }) => {
 
   /** When user toggles visibility with Eye icon, shows/hides the line on graph */
   const onVisibilityChange = () => {
+    /**Check if the interval on graph has changed or the existing data is with correctinterval*/
+    if(!company.visible){
+      const storedDataInterval = graph.data &&  graph.data[companySymbol] && graph.data[companySymbol].dataInterval
+      if((graph.currentInterval === '10 days' && storedDataInterval !== '10 days') ||  (graph.currentInterval !== '10 days' && storedDataInterval === '10 days')) {
+        getFinancialData(dispatch,{ symbol:companySymbol,interval:graph.currentInterval,color:company.color })
+      }
+
+    }
     changeVisibility(dispatch,{ symbol:companySymbol, visible:!company.visible } )
   }
 

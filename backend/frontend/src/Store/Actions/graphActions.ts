@@ -93,8 +93,8 @@ export const getFinancialData = async ( dispatch:Dispatch<dispatchActions>, data
       payload: {
         [data.symbol]: {
           name:data.symbol,
-          color: data.color,
-          data:formatToCoordinate(financialdata[`Time Series (${dataInterval})`])
+          data:formatToCoordinate(financialdata[`Time Series (${dataInterval})`]),
+          dataInterval: data.interval
         }
       } })
 

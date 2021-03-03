@@ -10,9 +10,9 @@ export type companies = {
 export type companyData = {
     name: string
     data: coordinateFormattedData
-    isNotVisible?:boolean
     highlight?:boolean
-    color?:string
+    dataInterval: intervalLabel
+
 }
 
 export type intervalLabel = '10 days'|'1 month'| '6 month' |'1 year'| '5 years'| 'ytd'| 'max'
@@ -65,7 +65,7 @@ export interface companyDetail  {
   price: string,
   changePercent: string,
   name: string ,
-  visible: boolean
+  visible: boolean,
   color:colors | string
 }
 

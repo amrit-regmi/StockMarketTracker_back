@@ -22,14 +22,14 @@ describe( 'Test portfolio actions andreduce', () => {
         data: {
           testcompany: {
             name:'testcompany',
-            color:'blue',
+            dataInterval:'10 days'as intervalLabel,
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
             ]
           } ,
           testcompany2: {
             name:'testcompany2',
-            color:'blue',
+            dataInterval:'10 days'as intervalLabel,
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
             ]
@@ -53,7 +53,7 @@ describe( 'Test portfolio actions andreduce', () => {
         data: {
           testcompany2: {
             name:'testcompany2',
-            color:'blue',
+            dataInterval:'10 days',
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
             ]

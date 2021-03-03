@@ -15,7 +15,7 @@ describe('test graph Reducer actions and reducer', () => {
       payload: {
         'testCompany': {
           name:'testcompany',
-          color:'blue',
+          dataInterval: '10 days',
           data: [
             { x:17923000,y:10.4 }, { x:122122, y:123232 }
           ]
@@ -30,7 +30,7 @@ describe('test graph Reducer actions and reducer', () => {
           currentInterval:'10 days',
           data: { 'testCompany': {
             name:'testcompany',
-            color:'blue',
+            dataInterval: '10 days',
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
             ]
@@ -51,7 +51,7 @@ describe('test graph Reducer actions and reducer', () => {
         data: {
           testcompany: {
             name:'testcompany',
-            color:'blue',
+            dataInterval: '10 days' as intervalLabel,
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
             ]
@@ -77,7 +77,7 @@ describe('test graph Reducer actions and reducer', () => {
             testcompany: {
               highlight:true,
               name:'testcompany',
-              color:'blue',
+              dataInterval: '10 days',
               data: [
                 { x:17923000,y:10.4 }, { x:122122, y:123232 }
               ]
@@ -103,7 +103,7 @@ describe('test graph Reducer actions and reducer', () => {
         data: {
           testcompany: {
             name:'testcompany',
-            color:'blue',
+            dataInterval:'10 days'as intervalLabel,
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
             ]
@@ -133,7 +133,7 @@ describe('test graph Reducer actions and reducer', () => {
           data: {
             testcompany: {
               name:'testcompany',
-              color:'green',
+              dataInterval:'10 days',
               data: [
                 { x:17923000,y:10.4 }, { x:122122, y:123232 }
               ]
@@ -156,7 +156,7 @@ describe('test graph Reducer actions and reducer', () => {
         data: {
           testcompany: {
             name:'testcompany',
-            color:'blue',
+            dataInterval:'10 days'as intervalLabel,
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
             ]
@@ -183,7 +183,7 @@ describe('test graph Reducer actions and reducer', () => {
         data: {
           testcompany: {
             name:'testcompany',
-            color:'blue',
+            dataInterval:'10 days',
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
             ]
@@ -206,6 +206,7 @@ describe('test graph Reducer actions and reducer', () => {
         data: {
           testcompany: {
             name:'testcompany',
+            dataInterval:'10 days'as intervalLabel,
             color:'blue',
             data: [
               { x:17923000,y:10.4 }, { x:122122, y:123232 }
@@ -235,7 +236,7 @@ describe('test graph Reducer actions and reducer', () => {
           currentInterval:'10 days'as intervalLabel,
           data: {
             testcompany: {
-              isNotVisible:true,
+              dataInterval:'10 days',
               name:'testcompany',
               color:'blue',
               data: [

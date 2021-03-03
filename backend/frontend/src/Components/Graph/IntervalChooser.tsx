@@ -13,7 +13,9 @@ const IntervalChooser:FC = () => {
     //*If the store has intraday data need tore fetch monthly data for each company on portfolio
     if((graph.currentInterval === '10 days' && name !== '10 days') ||  (graph.currentInterval !== '10 days' && name === '10 days')) {
       Object.keys(portfolio).forEach(async (company) => {
-        getFinancialData(dispatch,{ symbol:portfolio[company].symbol,interval:name,color:portfolio[company].color })
+        if(portfolio[company].visible){
+          getFinancialData(dispatch,{ symbol:portfolio[company].symbol,interval:name,color:portfolio[company].color })
+        }
       })
     }
 
