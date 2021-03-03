@@ -22,8 +22,8 @@ const graphReducer = (state:store , action : GraphAction ) :store => {
     if(!graphCopy.data || !graphCopy.data[action.payload.symbol] ){
       return { ...state }
     }
-    graphCopy.data[action.payload.symbol]!.highlight=action.payload.highlight
-    return { ...state,...graphCopy }
+    graphCopy.data[action.payload.symbol].highlight=action.payload.highlight
+    return { ...state,graph:{ ...graphCopy } }
 
   case CHANGE_LINE_COLOUR:
     const graphCopy1 = { ...state.graph }
@@ -31,7 +31,7 @@ const graphReducer = (state:store , action : GraphAction ) :store => {
       return { ...state }
     }
     graphCopy1.data[action.payload.symbol]!.color=action.payload.color
-    return { ...state,...graphCopy1, portfolio: {
+    return { ...state,graph:{ ...graphCopy1 }, portfolio: {
       ...state.portfolio,[action.payload.symbol]:{
         ...state.portfolio[action.payload.symbol],color: action.payload.color as colors
       }
@@ -47,7 +47,7 @@ const graphReducer = (state:store , action : GraphAction ) :store => {
     }
 
     graphCopy2.data[action.payload.symbol]!.isNotVisible = !action.payload.visible
-    return { ...state,...graphCopy2, portfolio: {
+    return { ...state,graph:{ ...graphCopy2 }, portfolio: {
       ...state.portfolio,[action.payload.symbol]:{
         ...state.portfolio[action.payload.symbol],visible: action.payload.visible
       }

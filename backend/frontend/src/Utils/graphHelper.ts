@@ -1,4 +1,4 @@
-import { coordinateFormattedData, intervalLabel } from '../types'
+import { coordinateFormattedData, intervalLabel, timeData  } from '../types'
 import { formatDate, getStartingPointForInterval } from './dateUtils'
 
 /**
@@ -67,4 +67,21 @@ export const clipDataBasedonInterval = (graphInterval: intervalLabel, data: coor
   }
   const startFromDate = getStartingPointForInterval(graphInterval).getTime()
   return data.filter(cordinateObject => cordinateObject.x >= startFromDate )
+}
+
+
+/**
+ * Formats the retrived raw data from api - converts date string to date int on x axis and sets opening price on y axis
+ * @param timeData {Object}
+ * @returns array of cordinate formatted data x-dateInt y- price double
+ */
+export const formatToCoordinate = (timedata:timeData ):coordinateFormattedData => {
+  const data: coordinateFormattedData = []
+  timedata && Object.keys(timedata).forEach( ( dateString) => {
+    data.push({
+      x : Date.parse(dateString),
+      y : parseFloat(timedata[dateString]['1. open'])
+    })
+  })
+  return data
 }

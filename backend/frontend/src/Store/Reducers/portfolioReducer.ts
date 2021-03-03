@@ -2,7 +2,6 @@
 import {  store } from '../../types'
 import { PortfolioAction } from '../Actions/portfolioActions'
 
-export const ADD_COMPANY= 'ADD_COMPANY'
 export const REMOVE_COMPANY_FROM_PORTFOLIO = 'REMOVE_COMPANY_FROM_PORTFOLIO'
 export const GET_COMPANY_QUOTE = 'GET_COMPANY_QUOTE'
 

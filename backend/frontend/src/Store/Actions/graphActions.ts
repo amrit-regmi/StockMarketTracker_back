@@ -1,7 +1,7 @@
 import { Dispatch } from 'react'
 import services from '../../Services/service'
 import { companies, dispatchActions, intervalLabel } from '../../types'
-import { formatToCoordinate } from '../../Utils/dataFormatter'
+import { formatToCoordinate } from '../../Utils/graphHelper'
 import { CHANGE_LINE_COLOUR, GET_GRAPH_FINANCIAL_DATA, SET_HIGHLIGHT_LINE, SET_INTERVAL, SHOW_ON_GRAPH } from '../Reducers/graphReducer'
 import { setError } from './errorActions'
 
