@@ -30,7 +30,7 @@ public class AlphavantageApiCacheTest {
     @AfterEach
     public void removeIBM() throws IOException {
       apiConfig.removeCompany("IBM");
-      FileUtils.deleteDirectory(new File("alphavantageApiData/IBM"));
+      FileUtils.deleteDirectory(new File("data/IBM"));
     }
     
     @Test 
@@ -39,7 +39,7 @@ public class AlphavantageApiCacheTest {
       apiConfig.setkey("demo");
 
       JsonNode financialData = api.fetchFinancialData("TIME_SERIES_INTRADAY", "IBM", "5min", "full" ,true);
-      String file = "alphaVantageAPiData/IBM/5min_data.json"; 
+      String file = "data/IBM/5min_data.json"; 
       
       Path path = Paths.get(file);
       assertEquals(Files.exists(path),true);
@@ -60,7 +60,7 @@ public class AlphavantageApiCacheTest {
         ()-> assertNull(financialData.get("Time Series (5min)"))
         );
 
-        String file = "alphaVantageAPiData/IBM/5min_data.json"; 
+        String file = "data/IBM/5min_data.json"; 
          Path path = Paths.get(file);
        
       
@@ -79,7 +79,7 @@ public class AlphavantageApiCacheTest {
         ()-> assertNotNull(financialData.get("Time Series (5min)"))
       );
 
-      String file = "alphaVantageAPiData/IBM/5min_data.json"; 
+      String file = "data/IBM/5min_data.json"; 
       Path path = Paths.get(file);
       assertEquals(Files.exists(path),true);
 

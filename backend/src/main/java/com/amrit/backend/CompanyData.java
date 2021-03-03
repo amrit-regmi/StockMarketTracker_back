@@ -20,7 +20,7 @@ public class CompanyData {
 
   public CompanyData(String symbol){
     this.symbol = symbol;
-    this.dataPath = "alphavantageApiData/"+symbol;
+    this.dataPath = "data/"+symbol;
   }
 
   public void setDataPath(String path){
